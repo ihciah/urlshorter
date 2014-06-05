@@ -1,0 +1,219 @@
+$def with (count,url,allcount,allclick)
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>T.Ihc.IM</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="description" content="t.ihc.im提供的网址缩短服务" />
+		<meta name="keywords" content="URL shorter,网址缩短,t.ihc.im" />
+        <style type="text/css">
+		@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Source Sans Pro Light'), local('SourceSansPro-Light'), url(/css/font/font1.woff) format('woff');
+}
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Source Sans Pro Semibold'), local('SourceSansPro-Semibold'), url(/css/font/font2.woff) format('woff');
+}
+pre{ 
+		white-space:pre-wrap; /* css3.0 */ 
+		white-space:-moz-pre-wrap; /* Firefox */ 
+		white-space:-pre-wrap; /* Opera 4-6 */ 
+		white-space:-o-pre-wrap; /* Opera 7 */ 
+		word-wrap:break-word; /* Internet Explorer 5.5+ */ 
+}</style>
+		<!--[if lte IE 8]><script src="js/html5shiv.js"><![endif]-->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.dropotron.js"></script>
+		<script src="js/skel.min.js"></script>
+		<script src="js/skel-panels.min.js"></script>
+		<script src="js/init.js"></script>
+        <script>
+		oridata="";
+		function fetchnote()
+		{
+  			$$.get("shownote?surl="+mysurl,function(data,status){//此处返回data直接就是数据
+				if (status!="success")
+				{
+					$$("#note").text("网络错误,请刷新重试!");
+				}
+				else
+				{
+					$$("#note").text(data);
+					oridata=data;
+					//$$("#note").html($$("#note").html().replace(/\n/g,"<br>").replace(/ /g,"&nbsp;"))//处理换行和空格
+				}
+  			});
+		}
+		$$(document).ready(function(){
+			subs=0;//未点击按钮
+			changed=0;//未显示编辑框
+			mysurl="$url";
+			fetchnote();
+		});
+		function subclick()
+		{
+			if (subs==0)
+			{
+				subs=1;//已经显示密码框
+				$$("p#enterpwd").removeAttr("hidden");//显示密码框
+				$$("a#edit").text("确认密码");
+				$$("li#litip").html($$("li#litip").html().replace("如果你知道创建链接时的密码",""));//去掉密码提示
+			}
+			else if (subs==1)
+			{
+				if ($$("#pwd").val()=="")
+				{
+					show("密码为空不能修改!");
+					return;
+				}
+				subs=2;//已提交，但未收到回复
+				$$("a#edit").text("提交中...");
+				
+				mypwd=$$("#pwd").val();
+				$$.post("checktextpwd",
+				  {
+				    surl:mysurl,
+				    pwd:mypwd
+				  },
+				  function(data,status){
+					  subs=1;
+					  $$("a#edit").text("确认密码");
+					  if (status=="success")
+					  {
+						  res=eval('(' + data + ')');
+						  if (res.ok==1)
+						  {
+							  $$("a#edit").text("提交修改");
+							  $$("p#enterpwd").attr("hidden","hidden");//隐藏文本框
+							  subs=4;//密码验证完毕
+							  changeform();
+						  }
+						  else
+						  {
+							  show(res.errinfo);
+							  $$("a#edit").focus();
+						  }
+					  }
+					  else
+					  {
+						  show("Oh no,数据发送不成功...重试下吧");
+					  }
+				  });
+			}
+			else if (subs==4)
+			{
+				if (changed==0)
+				{
+					changeform();
+				}
+				else
+				{
+					submitform();
+				}
+			}
+		}
+		function changeform()
+		{
+			if (changed==0)
+			{
+				 changed=1;
+				 $$("#note").after("<textarea id=\"editbox\"></textarea>");
+				 //$$("#note").html($$("#note").html().replace("<br>",/\n/g))
+				 $$("#editbox").val(oridata);
+				 $$("#note").remove();
+			}
+		}
+		function submitform()
+		{
+			$$.post("add",
+  			{
+    			url:$$("#editbox").val(),
+    			pwd:$$("#pwd").val(),
+				shorturl:mysurl,
+				choose:"note"
+  			},
+  			function(data,status){
+    			if (status!="success")
+				{
+					show("网络错误,请刷新重试!");
+				}
+				else
+				{
+					show("提交成功!内容已更新.");
+					changed=0;
+					$$("#editbox").after("<pre id=\"note\">Loading...</pre>");
+					$$("#editbox").remove();
+					fetchnote();
+					$$("a#edit").text("修改");
+				}
+  			});
+		}
+		function show(msg)
+		{
+			//显示提示消息
+			alert(msg);
+		}
+		
+		</script>
+		<noscript>
+			<link rel="stylesheet" href="css/skel-noscript.css" />
+			<link rel="stylesheet" href="css/style.css" />
+			<link rel="stylesheet" href="css/style-n1.css" />
+		</noscript>
+	</head>
+	<body class="no-sidebar">
+			<div id="header-wrapper">
+					<div id="header" class="container">
+					  <h1 id="logo"><a href="/">t.ihc.im网址缩短</a></h1>
+							<nav id="nav">
+								<ul>
+									<li>
+										<a href="">链接</a>
+										<ul>
+											<li><a href="http://www.ihcblog.com" target="_blank">下一站 - IhcBlog</a></li>
+											<li><a href="https://github.com/ihciah" target="_blank">我的Github</a></li>
+										</ul>
+									</li>
+									<li><a href="#">帮助</a></li>
+									<li class="break"><a href="about">关于</a></li>
+									<li><a href="admin">管理后台</a></li>
+								</ul>
+							</nav>
+
+					</div>
+
+			</div>
+			<div class="wrapper"style="padding-top: 30px;padding-bottom: 10px;">
+				<div class="container">
+					<div class="row" id="main">
+						<div class="12u">
+								<article id="content">
+									<header>
+										<h2>便笺条</h2>
+										<span><a href="#">t.ihc.im/$url</a> - 点击量：$count</span>
+									</header><form>
+									<pre id="note">Loading...</pre>
+                                    <p id="enterpwd" hidden="hidden">创建链接时的密码:<input type="text" id="pwd"></input></p>
+                                    </form>
+								</article>
+                                <ul class="actions">
+								<li id="litip"><a class="button" id="edit" onClick="subclick();">修改</a> 如果你知道创建链接时的密码</li>
+							</ul>
+
+						</div>
+					</div>
+				</div>
+			</div>
+					<div id="copyright" class="container">
+						<ul class="menu">
+                        <li>目前共$allcount个缩短链接,跳转$allclick次.</li>
+							<li>&copy; Ihc.IM All rights reserved.</li><li>Code By <a href="http://www.ihcblog.com/" target="_blank" title="Ihcblog">Ihc</a>.  Template By HTML5 UP.</li>
+						</ul>
+					</div>
+	</body>
+</html>

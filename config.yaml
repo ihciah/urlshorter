@@ -1,0 +1,16 @@
+---
+name: wonchukissme
+version: 2
+libraries:
+- name: lxml
+  version: "2.3.4"
+- name: webpy
+  version: "0.36"
+handlers:
+- url: /css
+  static_dir: css
+- url: /images
+  static_dir: images
+- url: /js
+  static_dir: js
+...

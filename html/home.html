@@ -1,0 +1,209 @@
+$def with (allcount,allclick,info)
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>T.Ihc.IM</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="description" content="t.ihc.im提供的网址缩短服务" />
+		<meta name="keywords" content="URL shorter,网址缩短,t.ihc.im" />
+        <style type="text/css">
+		@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Source Sans Pro Light'), local('SourceSansPro-Light'), url(/css/font/font1.woff) format('woff');
+}
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Source Sans Pro Semibold'), local('SourceSansPro-Semibold'), url(/css/font/font2.woff) format('woff');
+}</style>
+		<!--[if lte IE 8]><script src="js/html5shiv.js"><![endif]-->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.dropotron.js"></script>
+		<script src="js/skel.min.js"></script>
+		<script src="js/skel-panels.min.js"></script>
+		<script src="js/init.js"></script>
+		<noscript>
+			<link rel="stylesheet" href="css/skel-noscript.css" />
+			<link rel="stylesheet" href="css/style.css" />
+			<link rel="stylesheet" href="css/style-n1.css" />
+		</noscript>
+        <script>
+	function submitform()
+	{
+		//待修改为jq实现
+		url=document.getElementById("url");
+		surl=document.getElementById("surl");
+		pwd=document.getElementById("pwd");
+		choose=document.myform.choose;
+		tip=document.getElementById("message");
+		if (surl.value.length<4 && surl.value.length>0)
+		{tip.innerHTML='请输入3位以上的短链接啦~';
+		surl.focus();}
+		else if (url.value.length<4)
+		{tip.innerHTML='网址输入有误!';
+		url.focus();}
+		else
+		{
+		    document.getElementById("message").innerHTML="正在提交...";
+			xmlhttp2.open("POST","add",true);
+        	xmlhttp2.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+			xmlhttp2.send("url="+encodeURIComponent(url.value)+"&pwd="+encodeURIComponent(pwd.value)+"&shorturl="+encodeURIComponent(surl.value)+"&choose="+encodeURIComponent(choose.value));
+		}
+	}
+	
+	function Loadbody()
+	{
+		//修改为jq实现，改为(document).ready加载速度会更快
+		tipin=document.getElementById("message");
+		if (window.XMLHttpRequest)
+  		{// code for IE7+, Firefox, Chrome, Opera, Safari
+  		xmlhttp=new XMLHttpRequest();
+		xmlhttp2=new XMLHttpRequest();
+  		}
+		else
+  		{// code for IE6, IE5
+  		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		xmlhttp2=new ActiveXObject("Microsoft.XMLHTTP");
+  		}
+		xmlhttp.onreadystatechange=function()
+  		{
+  		if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    		{
+				res=eval('(' + xmlhttp.responseText + ')');
+				
+				if (res.ok==1)
+				{
+					tipin.innerHTML=res.url+'链接可用!';
+				}
+				else
+				{
+					tipin.innerHTML=res.url;
+				}
+    			
+    		}
+  		}
+		xmlhttp2.onreadystatechange=function()
+  		{
+  		if (xmlhttp2.readyState==4 && xmlhttp2.status==200)
+    		{
+				res2=eval('(' + xmlhttp2.responseText + ')');
+				if (res2.ok!=1)
+				{
+					document.getElementById("message").innerHTML="错误!"+res2.errinfo;
+				}
+				else
+				{
+					document.getElementById("message").innerHTML='http://t.ihc.im/'+res2.surl+' 链接已生成'
+				}
+			}
+		}
+
+	}
+	function check()
+	{
+		surl=document.getElementById("surl");
+		url=surl.value;
+		if (url.length<4 && url.length>0)
+		{
+			document.getElementById("message").innerHTML="请输入3位以上的短链接啦~";
+		}
+		else if (url.length!=0)	{
+		document.getElementById("message").innerHTML="链接检查中...";
+		xmlhttp.open("GET","check?url="+url,true);
+        xmlhttp.send();}
+        else {
+        document.getElementById("message").innerHTML="将自动生成四位链接";}
+	}
+	function changetip(v)
+	{
+		document.getElementById("url").placeholder=v;
+	}
+		</script>
+	</head>
+	<body class="homepage" onLoad="Loadbody();">
+
+		<!-- Header Wrapper -->
+			<div id="header-wrapper" style="padding-bottom: 5px;">
+						
+				<!-- Header -->
+					<div id="header" class="container">
+						
+						<!-- Logo -->
+					  <h1 id="logo"><a href="#">t.ihc.im网址缩短</a></h1>
+						
+						<!-- Nav -->
+							<nav id="nav">
+								<ul>
+									<li>
+										<a href="">链接</a>
+										<ul>
+											<li><a href="http://www.ihcblog.com" target="_blank">下一站 - IhcBlog</a></li>
+											<li><a href="https://github.com/ihciah" target="_blank">我的Github</a></li>
+										</ul>
+									</li>
+									<li><a href="help">帮助</a></li>
+									<li class="break"><a href="about">关于</a></li>
+									<li><a href="admin">管理后台</a></li>
+								</ul>
+							</nav>
+
+					</div>
+			    <div align="center">
+		      </div>
+				    <section id="hero" class="container">
+						<form method="post" action="#" id="myform" name="myform">
+<div class="row half">
+	<div class="3u">
+    <p align="right" style="margin-bottom: 5px;">短链接:http://t.ihc.im/</p>
+    </div>
+    <div class="3u" style="padding-left: 0px;margin-top: 6px;">
+      <div align="center">
+        <input name="shorturl" id="surl" placeholder="  指定缩短后的网址(可不填)" type="text" class="form-control" onchange="check()" style="border-top-width:1p;padding-top: 0px;padding-bottom: 0px;padding-left: 1px;"/>
+      </div>
+    </div>
+    <div class="6u" style="text-align:left"><p align="center" id="message" style="margin-bottom: 5px;">$info</p></div>
+</div>
+                                      <div class="row half">
+                                      <div class="3u">
+										  <p align="right">密码(可不填):</p>
+										</div>
+										<div class="3u" style="padding-left: 0px;">
+										  <div align="center">
+										    <input name="pwd" id="pwd" placeholder="用于重置链接(可不填)" type="text" class="form-control" />
+									      </div>
+										</div>
+                                        <div class="6u" style="text-align:left">类型:<input type="radio" name="choose" id="choose1" value="url" style="width: 19px;height: 19px;" checked="checked" onClick="changetip('原始网址');"/><label for="choose1")>网址缩短</label>   <input type="radio" name="choose" id="choose2" value="text" style="width: 19px;height: 19px;" onClick="changetip('文本内容');"/><label for="choose2")>便笺条</label></div>
+                                        </div>
+									<div class="row half">
+										<div class="12u">
+											<div align="center">
+											  <textarea name="url" id="url" class="form-control" placeholder="原始网址" wrap="soft"></textarea>
+										  </div>
+										</div>
+									</div>
+									<div class="row half">
+										<div class="12u">
+											<div align="center">
+											  <ul class="actions">
+											    <li><a href="#" onclick="submitform();" class="button">缩短</a></li>
+										      </ul>
+										  </div>
+										</div>
+									</div>
+								</form>
+					</section>
+					<div id="copyright" class="container">
+						<ul class="menu">
+                        <li>目前共$allcount个缩短链接,跳转$allclick次.</li>
+							<li>&copy; Ihc.IM All rights reserved.</li><li>Code By <a href="http://www.ihcblog.com/" target="_blank" title="Ihcblog">Ihc</a>.  Template By HTML5 UP.</li>
+						</ul>
+					</div>
+			  </div>
+            </div>
+</div>
+
+	</body>
+</html>

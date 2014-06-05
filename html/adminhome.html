@@ -1,0 +1,569 @@
+$def with (uid,alllink,allclick)
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>管理中心-T.ihc.IM</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="description" content="t.ihc.im提供的网址缩短服务" />
+		<meta name="keywords" content="URL shorter,网址缩短,t.ihc.im" />
+        <style type="text/css">
+		@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Source Sans Pro Light'), local('SourceSansPro-Light'), url(/css/font/font1.woff) format('woff');
+}
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Source Sans Pro Semibold'), local('SourceSansPro-Semibold'), url(/css/font/font2.woff) format('woff');
+}
+pre{ 
+		white-space:pre-wrap; /* css3.0 */ 
+		white-space:-moz-pre-wrap; /* Firefox */ 
+		white-space:-pre-wrap; /* Opera 4-6 */ 
+		white-space:-o-pre-wrap; /* Opera 7 */ 
+		word-wrap:break-word; /* Internet Explorer 5.5+ */ 
+}</style>
+		<!--[if lte IE 8]><script src="js/html5shiv.js"><![endif]-->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.dropotron.js"></script>
+		<script src="js/skel.min.js"></script>
+		<script src="js/skel-panels.min.js"></script>
+		<script src="js/init.js"></script>
+        <script>
+		
+		
+		$$(document).ready(function(){
+			changed='none';
+			marker='';
+			dmark='';
+			alink();
+			$$("#next").click(function()
+			{
+				cleartable();
+				requestlink();
+			});
+			$$("#previous").click(function()
+			{
+				cleartable();
+				marker='';
+				requestlink();
+			});
+		});
+		function d(mark)
+		{
+			var r=confirm("确认删除链接"+mark+"？");
+			if (r==true)
+			{
+			dellink(mark);
+			//在界面上删除该元素？
+			}
+			if (dmark==mark)
+			{
+				changehtml('find');
+				dmark='';
+			}
+		}
+		function s(mark)
+		{
+			changehtml('result');
+			editlink(mark);
+		}
+		function changehtml(type)
+		{
+			changed=type;
+			allhide();
+			switch (type)
+			{
+				case "link":
+				$$("#headerlink").show();
+				break;
+				
+				case "find":
+				$$("#headerfind").show();
+				break;
+				
+				case "result":
+				$$("#headerres").show();
+				break;
+				
+				case "user":
+				$$("#headeruser").show();
+				break;
+				
+				case "blacklist":
+				$$("#headerblack").show();
+				break;
+			}
+		}
+		function allhide()
+		{
+			var headerlist=["#headerlink","#headerfind","#headerres","#headeruser","#headerblack"];
+			for (i in headerlist)
+			{
+				$$(headerlist[i]).hide();
+			}
+		}
+		function gettxt(s)
+		{
+			$$("#tempp").text(s);
+			return $$("#tempp").text();
+		}
+		function dellink(s)
+		{
+			$$.post("admin?action=dellink",
+  			{
+    			perfix:s,
+  			},
+  			function(data,status){
+    			if (status!="success")
+				{
+					show("网络错误,请重尝试删除!");
+				}
+				else
+				{
+					res=eval('(' + data + ')');
+					if (res.ok!=1)
+					{
+						show(res.errinfo);
+					}
+					else
+					{
+						show(s+'删除成功!')
+					}
+				}
+  			});
+		}
+		
+		function editlink(s)
+		{
+			dmark=s;
+			$$.post("admin?action=requestone",
+  			{
+    			k:s,
+  			},
+  			function(data,status){
+    			if (status!="success")
+				{
+					show("网络错误,请重新获取!");
+				}
+				else
+				{
+					var res=eval('(' + data + ')');
+					if (res.ok!=1)
+					{
+						show(res.errinfo);
+					}
+					else
+					{
+						var res2=eval('(' + res.result + ')');
+						$$('#rsurl').val(s);
+						$$('#rip').val(res2.i);
+						$$('#rpwd').val(res2.p);
+						$$('#rclick').val(res2.c);
+						$$('#rtime').val(res2.t);
+						$$('#rtype').val(res2.type);
+						$$('#rurl').val(res2.u);
+					}
+					
+				}
+  			});
+		}
+		function submitfind()
+		{
+			allhide();
+			$$("#headerres").show();
+			editlink($$("#findbox").val());
+		}
+		
+		function submitedit()
+		{
+			var data={'u':$$('#rurl').val(),
+			      'i':$$('#rip').val(),
+				  'p':$$('#rpwd').val(),
+				  'c':$$('#rclick').val(),
+				  't':$$('#rtime').val(),
+				  'type':$$('#rtype').val()};
+			var jdata=$$.stringifyJSON(data);
+			k=$$('#rsurl').val();
+			
+			$$.post("admin?action=submitlink",
+  			{
+    			perfix:k,
+				jsondata:jdata,
+  			},
+  			function(data,status){
+    			if (status!="success")
+				{
+					show("网络错误,请重新获取!");
+				}
+				else
+				{
+					var res=eval('(' + data + ')');
+					if (res.ok!=1)
+					{
+						show(res.errinfo);
+					}
+					else
+					{
+						show('已更新');
+					}
+					
+				}
+  			});
+		
+		}
+		
+		function requestlink()
+		{
+			$$.post("admin?action=requestlink",
+  			{
+    			marker:marker,
+  			},
+  			function(data,status){
+    			if (status!="success")
+				{
+					show("网络错误,请重试获取link数据!");
+				}
+				else
+				{
+					res=eval('(' + data + ')');
+					if (res.ok!=1)
+					{
+						show(res.errinfo);
+					}
+					else
+					{
+						reslist=res.result;
+						for (x in reslist)
+						{
+							$$("#tableshow").append("<tr>");
+							mark=gettxt(reslist[x].k);
+							var v=eval('(' + reslist[x].v + ')');
+
+							var ip=gettxt(v.i);
+
+							var url=gettxt(v.u.substring(0,70));
+							if (v.u.length>70)
+							{
+								url+='...'
+							}
+							
+							var pwd=gettxt(v.p);
+							var clickcount=gettxt(v.c);
+							var myDate=new Date((v.t-0)*1000);
+							var str=myDate.toString()
+							var crtime=str.substring(0,str.indexOf(" GMT"));
+							var type=gettxt(v.type);
+							$$("#tableshow").append('<td><div align="center">'+mark);
+							$$("#tableshow").append('</div></td><td><div align="center">'+url);
+							$$("#tableshow").append('</div></td><td><div align="center">'+clickcount);
+							$$("#tableshow").append('</div></td><td><div align="center">'+crtime);
+							$$("#tableshow").append('</div></td><td><div align="center">'+ip);
+							$$("#tableshow").append('</div></td><td><div align="center">'+pwd);
+							$$("#tableshow").append('</div></td><td width="4%"><div align="center"><a onclick="s(\''+mark+'\');">Edit</a>');
+							$$("#tableshow").append('</div></td><td width="5%"><div align="center"><a onclick="d(\''+mark+'\');">Del</a>');
+							$$("#tableshow").append('</div></td></tr>');
+						}
+					}
+				}
+  			});
+		}
+		function show(msg)
+		{
+			//显示提示消息
+			alert(msg);
+		}
+		function showlink()
+		{
+			//跳页代码回头补上
+			requestlink();
+		}
+		function alink()
+		{
+			page=1;
+			changehtml('link');
+			cleartable();
+			showlink(page);
+		}
+		function afind()
+		{
+			changehtml('find');
+		}
+		function auser()
+		{
+			changehtml('user');
+		}
+		function ablacklist()
+		{
+			changehtml('blacklist');
+			$$("#blackbox").val("数据获取中...");
+			$$.post("admin?action=requestblack",
+  			{},
+  			function(data,status){
+    			if (status!="success")
+				{
+					show("网络错误,请重新获取!");
+				}
+				else
+				{
+					var res=eval('(' + data + ')');
+					if (res.ok!=1)
+					{
+						show(res.errinfo);
+					}
+					else
+					{
+						var bl=eval('(' + res.result + ')');
+						var black=bl.key;
+						$$("#blackbox").val(black);
+					}
+					
+				}
+  			});
+		}
+		function submitblack()
+		{
+			var data={'key':$$('#blackbox').val()};
+			var jdata=$$.stringifyJSON(data);
+			$$.post("admin?action=submitblacklist",
+  			{
+				wordlist:jdata
+			},
+  			function(data,status){
+    			if (status!="success")
+				{
+					show("网络错误,请重新提交!");
+				}
+				else
+				{
+					show("已提交!");
+				}
+  			});
+		}
+		function submitpwdchange()
+		{
+			if ($$("#newpwd1").val()!=$$("#newpwd2").val()||$$("#newpwd1").val()=='')
+			{
+				if ($$("#newpwd1").val()!='')
+				{
+					show("两次输入的密码不一致哦");
+				}
+				else
+				{
+					show("你还没输入新密码呢~");
+				}
+			}
+			else
+			{
+				$$("#pwdsub").text("正在提交");
+				$$("#pwdsub").attr("onclick","");
+				$$.post("admin?action=pwdsub",
+  			    {
+				    uid:"$uid",
+					oldpwd:$$("#oldpwd").val(),
+					newpwd:$$("#newpwd1").val()
+			    },
+  			    function(data,status){
+    			    if (status!="success")
+				    {
+					    show("网络错误,请重新提交!");
+						$$("#pwdsub").attr("onclick","submitpwdchange();");
+						$$("#pwdsub").text("提交");
+				    }
+				    else
+				    {
+						$$("#pwdsub").attr("onclick","submitpwdchange();");
+						$$("#pwdsub").text("提交");
+					    var res=eval('(' + data + ')');
+					    if (res.ok!=1)
+					    {
+						    show(res.errinfo);
+					    }
+					    else
+						{
+							show("密码更改成功!新密码:"+$$("#newpwd1").val()+"请牢记!");
+							$$("#oldpwd").val('');
+							$$("#newpwd1").val('');
+							$$("#newpwd2").val('');
+						}
+				     }
+  			    });
+			}
+		}
+		function cleartable()
+		{
+			var str='<tr><th width="9%" scope="col"><div align="center">短链接</div></th>\
+					<th width="37%" scope="col"><div align="center">网址/内容</div></th>\
+					<th width="6%" scope="col"><div align="center">点击量</div></th>\
+					<th width="16%" scope="col"><div align="center">创建日期</div></th>\
+					<th width="13%" scope="col"><div align="center">IP</div></th>\
+					<th width="10%" scope="col"><div align="center">密码</div></th>\
+					<th colspan="2" scope="col"><div align="center">操作</div></th></tr>';
+			$$("#tableshow").html(str);
+		}
+		
+		</script>
+		<noscript>
+			<link rel="stylesheet" href="css/skel-noscript.css" />
+			<link rel="stylesheet" href="css/style.css" />
+			<link rel="stylesheet" href="css/style-n1.css" />
+		</noscript>
+	</head>
+	<body class="no-sidebar">
+			<div id="header-wrapper">
+					<div id="header" class="container">
+                    <p id="tempp" hidden="hidden"></p>
+					  <h1 id="logo"><a href="/">t.ihc.im网址缩短</a></h1>
+							<nav id="nav">
+								<ul>
+									<li>
+										<a href="">链接</a>
+										<ul>
+											<li><a href="http://www.ihcblog.com" target="_blank">下一站 - IhcBlog</a></li>
+											<li><a href="https://github.com/ihciah" target="_blank">我的Github</a></li>
+										</ul>
+									</li>
+									<li><a href="#">帮助</a></li>
+									<li class="break"><a href="about">关于</a></li>
+									<li><a href="logout">注销</a></li>
+								</ul>
+							</nav>
+
+					</div>
+
+			</div>
+
+		<!-- Main Wrapper -->
+			<div class="wrapper">
+
+				<div class="container">
+					<div class="row" id="main">
+						<div class="2u" style="padding-left: 30px;">
+							<!-- Sidebar -->
+								<section id="sidebar">
+									<section>
+										<header>
+                                            <h3 style="color:#f34848">Menu</h3>
+											<h1><a onclick="alink();">所有链接</a></h1>
+                                            <h1><a onclick="afind();">查找</a></h1>
+                                            <h1><a onclick="auser();">用户管理</a></h1>
+                                            <h1><a onclick="ablacklist();">黑名单</a></h1>
+										</header>
+										<p>当前用户：$uid</p>
+                                        <p align="left"><a href="/logout">[注销]</a></p>
+									</section>
+						</div>
+						<div class="10u skel-cell-mainContent" style="padding-left: 0px;">
+							<!-- Content -->
+								<article id="content">
+									<header id="headerlink">
+										<h2>所有链接</h2>
+										<div align="center">
+										  <table width="100%" border="1"><tbody id="tableshow">
+										    <tr>
+										      <th width="9%" scope="col"><div align="center">短链接</div></th>
+										      <th width="37%" scope="col"><div align="center">网址/内容</div></th>
+										      <th width="6%" scope="col"><div align="center">点击量</div></th>
+										      <th width="16%" scope="col"><div align="center">创建日期</div></th>
+										      <th width="13%" scope="col"><div align="center">IP</div></th>
+										      <th width="10%" scope="col"><div align="center">密码</div></th>
+										      <th width="9%" colspan="2" scope="col"><div align="center">操作</div></th>
+									        </tr>
+										    </tbody>
+									      </table>
+									  </div>
+										<p align="left"><a href="#" id="previous">首页</a> | <a href="#" id="next">下一页</a> 跳页
+										  <input type="text" name="pageid" id="pageid" style="width: 44px;">
+                                        <a href="#" id="jump">GO</a></p>
+									</header>
+                                    
+                                    <header id="headerfind">
+										<h2>查找</h2>
+										<div align="center">
+										  
+										  <div align="left" id="divfind">
+										    <input type="text" name="findbox" id="findbox">
+								          <a href="#" id="findsubmit" onclick="submitfind();">提交</a></div>
+									  </div>
+									
+									</header>
+                                    
+                                    <header id="headerres">
+										<h2>编辑</h2>
+										<div align="center">
+										  
+										  <div align="left">
+										    <p>Short URL：<input type="text" id="rsurl"></p>
+										    <p>IP：<input type="text" id="rip"></p>
+										    <p>密码：<input type="text" id="rpwd"></p>
+										    <p>点击量：<input type="text" id="rclick"></p>
+										    <p>创建时间：<input type="text" id="rtime"></p>
+										    <p>类型(url/text)：<input type="text" id="rtype"></p>
+										    <p>内容：</p>
+										    <p><textarea name="textarea" id="rurl" cols="45" rows="5"></textarea></p>
+										    <p><a href="#" id="rsubmit" onClick="submitedit();">提交</a> | <a href="#" id="rdel" onClick="d(dmark);">删除</a></p>
+										  </div>
+									  </div>
+									
+									</header>
+                                    
+                                    <header id="headeruser">
+										<h2>用户管理</h2>
+										<div align="center">
+										  
+										  <div align="left">
+										    <p>当前用户:$uid</p>
+										    <p>旧密码:
+										      <label for="oldpwd"></label>
+										      <input type="text" name="oldpwd" id="oldpwd">
+										    </p>
+										    <p>新密码:
+										      <label for="newpwd1"></label>
+										      <input type="text" name="newpwd1" id="newpwd1">
+										    </p>
+										    <p>重新键入新密码:
+										      <label for="newpwd2"></label>
+										      <input type="text" name="newpwd2" id="newpwd2">
+										    </p>
+										    <a onclick="submitpwdchange();" id="pwdsub">提交</a>
+										  </div>
+									  </div>
+									</header>
+                                    
+                                    
+                                    <header id="headerblack">
+										<h2>黑名单设置</h2>
+										<div align="center">
+										  <div align="left">
+										    <p>内容关键字(逗号分隔,不要换行)：
+                                            <textarea name="blackbox" id="blackbox" cols="45" rows="5"></textarea>
+										    </p>
+										    <p><a onclick="submitblack();" id="bsubmit">提交</a></p>
+										  </div>
+									  </div>
+									</header>
+                                    
+                                    
+						  </article>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		<!-- Footer Wrapper -->
+			<div id="footer-wrapper" style="padding-bottom: 20px;padding-left: 0px;padding-top: 0px;">
+				<!-- Copyright -->
+					<div id="copyright" class="container">
+						<ul class="menu" style="color:#D56FD0;">
+                        <li>目前共$alllink个缩短链接,跳转$allclick次.</li>
+							<li>&copy; Ihc.IM All rights reserved.</li><li>Code By <a href="http://www.ihcblog.com/" target="_blank" title="Ihcblog">Ihc</a>.  Template By HTML5 UP.</li>
+						</ul>
+					</div>
+
+			</div>
+
+	</body>
+</html>
