@@ -68,7 +68,10 @@ def addurl(kv,surl,url,pwd,ip,choose):
                 surl+=(random.choice(wordlist))
     #-------------------------------------------------------------------------
     #--------check url data key word---------
-    bl=kv.get('cblacklist') or ''
+    bl=kv.get('cblacklist')
+    if bl is None:
+        kv.set('cblacklist','{"key":"epochtime.com"}') ##默认黑名单
+        bl=kv.get('cblacklist')
     blist=json.loads(bl)['key'].split(',')
     for i in blist:
         if url.lower().find(i)!=-1:
@@ -142,6 +145,9 @@ class adminclass():
         return json.dumps(r)
     def requestblack(self):
         link=self.kv.get('cblacklist')#{'key':'aa,bb,cc'}
+        if link is None:
+            self.kv.set('cblacklist','{"key":"epochtime.com"}') ##默认黑名单
+            link=self.kv.get('cblacklist')
         r={}
         if link is not None:
             r['ok']=1
