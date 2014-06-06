@@ -141,7 +141,7 @@ class adminclass():
             r['result']=link
         else:
             r['ok']=0
-            r['errinfo']='Error when fetching data.'
+            r['errinfo']='No such data.'
         return json.dumps(r)
     def requestblack(self):
         link=self.kv.get('cblacklist')#{'key':'aa,bb,cc'}

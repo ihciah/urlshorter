@@ -105,6 +105,11 @@ pre{
 			{
 				$$(headerlist[i]).hide();
 			}
+			var clearlist=["#rsurl","#rip","#rpwd","#rclick","#rtime","#rtype","#rurl"];
+			for (i in clearlist)
+			{
+				$$(clearlist[i]).val("");
+			}
 		}
 		function gettxt(s)
 		{
@@ -154,6 +159,7 @@ pre{
 					var res=eval('(' + data + ')');
 					if (res.ok!=1)
 					{
+						changehtml('find');
 						show(res.errinfo);
 					}
 					else
