@@ -247,6 +247,11 @@ pre{
 						{
 							$$("#tableshow").append("<tr>");
 							mark=gettxt(reslist[x].k);
+							mark2=mark.substring(0,5)
+							if (mark.length>5)
+							{
+								mark2+='...'
+							}
 							var v=eval('(' + reslist[x].v + ')');
 
 							var ip=gettxt(v.i);
@@ -257,13 +262,13 @@ pre{
 								url+='...'
 							}
 							
-							var pwd=gettxt(v.p);
+							var pwd=gettxt(v.p.substring(0,5));
 							var clickcount=gettxt(v.c);
 							var myDate=new Date((v.t-0)*1000);
 							var str=myDate.toString()
 							var crtime=str.substring(0,str.indexOf(" GMT"));
 							var type=gettxt(v.type);
-							$$("#tableshow").append('<td><div align="center">'+mark);
+							$$("#tableshow").append('<td><div align="center">'+mark2);
 							$$("#tableshow").append('</div></td><td><div align="center">'+url);
 							$$("#tableshow").append('</div></td><td><div align="center">'+clickcount);
 							$$("#tableshow").append('</div></td><td><div align="center">'+crtime);
