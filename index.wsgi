@@ -128,9 +128,10 @@ class Addlink:
         shorturl=f(data.shorturl).replace("<",'').replace("?",'').replace("%",'')#防止通过短链进行XSS
         pwd=f(data.pwd)
         if choose=='url':
-            url=data.url[:300]
+            url=data.url[:1000]
         else:
-            url=data.url[:20000]
+            url=data.url[:20000]#便笺条上限2W字？KVDB好像最大4M
+            choose='text'
         (surl,pwd,url)=addurl(kv,shorturl,url,pwd,web.ctx.ip,choose)#('','errinfo','url') or ('surl',pwd,'url')
         if surl=='':
             pwd=infof[pwd]#pwd now is error info
@@ -180,7 +181,7 @@ class Jump:
         else:#存在该链接
             link=json.loads(link)
             addcount(kv,'click',[arg,link])#新增链接统计
-            if link.has_key('type') and link['type']=='text':
+            if link.has_key('type') and link['type']!='url':
                 return render.showtext(link['c'],arg,alllink,allclick)#显示文本.参数：点击量,短网址,总链接数,总点击数
             else:
                 raise web.seeother(link['u'])#跳转

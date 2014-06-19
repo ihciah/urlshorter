@@ -262,7 +262,7 @@ pre{
 								url+='...'
 							}
 							
-							var pwd=gettxt(v.p.substring(0,5));
+							var type=gettxt(v.type);
 							var clickcount=gettxt(v.c);
 							var myDate=new Date((v.t-0)*1000);
 							var str=myDate.toString()
@@ -273,7 +273,7 @@ pre{
 							$$("#tableshow").append('</div></td><td><div align="center">'+clickcount);
 							$$("#tableshow").append('</div></td><td><div align="center">'+crtime);
 							$$("#tableshow").append('</div></td><td><div align="center">'+ip);
-							$$("#tableshow").append('</div></td><td><div align="center">'+pwd);
+							$$("#tableshow").append('</div></td><td><div align="center">'+type);
 							$$("#tableshow").append('</div></td><td width="4%"><div align="center"><a onclick="s(\''+mark+'\');">Edit</a>');
 							$$("#tableshow").append('</div></td><td width="5%"><div align="center"><a onclick="d(\''+mark+'\');">Del</a>');
 							$$("#tableshow").append('</div></td></tr>');
@@ -411,7 +411,7 @@ pre{
 					<th width="6%" scope="col"><div align="center">点击量</div></th>\
 					<th width="16%" scope="col"><div align="center">创建日期</div></th>\
 					<th width="13%" scope="col"><div align="center">IP</div></th>\
-					<th width="10%" scope="col"><div align="center">密码</div></th>\
+					<th width="10%" scope="col"><div align="center">类型</div></th>\
 					<th colspan="2" scope="col"><div align="center">操作</div></th></tr>';
 			$$("#tableshow").html(str);
 		}
@@ -480,7 +480,7 @@ pre{
 										      <th width="6%" scope="col"><div align="center">点击量</div></th>
 										      <th width="16%" scope="col"><div align="center">创建日期</div></th>
 										      <th width="13%" scope="col"><div align="center">IP</div></th>
-										      <th width="10%" scope="col"><div align="center">密码</div></th>
+										      <th width="10%" scope="col"><div align="center">类型</div></th>
 										      <th width="9%" colspan="2" scope="col"><div align="center">操作</div></th>
 									        </tr>
 										    </tbody>
